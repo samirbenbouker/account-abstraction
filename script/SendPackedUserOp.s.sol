@@ -34,10 +34,10 @@ contract SendPackedUserOp is Script {
         bytes32 r;
         bytes32 s;
         uint256 ANVIL_DEFAULT_PRIVATE_KEY = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
-        if(block.chainid == 31337) {
+        if (block.chainid == 31337) {
             (v, r, s) = vm.sign(ANVIL_DEFAULT_PRIVATE_KEY, digest);
         } else {
-            (v, r, s) = vm.sign(config.account, digest); 
+            (v, r, s) = vm.sign(config.account, digest);
         }
         userOp.signature = abi.encodePacked(r, s, v); // note the order
         return userOp;
