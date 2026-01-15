@@ -76,7 +76,7 @@ contract MinimalAccountTest is Test {
             abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
 
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
-        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedUserOperation(executeCallData, config);
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
         bytes32 userOperationHash = IEntryPoint(config.entryPoint).getUserOpHash(packedUserOp);
 
         // act
@@ -99,7 +99,7 @@ contract MinimalAccountTest is Test {
             abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
 
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
-        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedUserOperation(executeCallData, config);
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
         bytes32 userOperationHash = IEntryPoint(config.entryPoint).getUserOpHash(packedUserOp);
         uint256 missingAccountFunds = 1e18;
 
@@ -108,5 +108,32 @@ contract MinimalAccountTest is Test {
         vm.prank(config.entryPoint);
         uint256 validationData = minimalAccount.validateUserOp(packedUserOp, userOperationHash, missingAccountFunds);
         assertEq(validationData, 0); // in this case 0 will be SUCCESS
+    }
+
+    function testEntryPointCanExecuteCommands() public {
+        // Arrange
+        address dest = address(usdc);
+        uint256 value = 0;
+
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
+        bytes memory executeCallData =
+            abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
+
+        HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
+        //bytes32 userOperationHash = IEntryPoint(config.entryPoint).getUserOpHash(packedUserOp);
+
+        // in this case random user will be us fee for execute this operation
+        vm.deal(address(minimalAccount), AMOUNT);
+        PackedUserOperation[] memory ops = new PackedUserOperation[](1);
+        ops[0] = packedUserOp;
+
+        // Act
+        assertEq(packedUserOp.sender, address(minimalAccount));
+        vm.prank(randomUser);
+        IEntryPoint(config.entryPoint).handleOps(ops, payable(randomUser)); // there will put who pais the fee
+
+        // Assert
+        assertEq(usdc.balanceOf(address(minimalAccount)), AMOUNT);
     }
 }
