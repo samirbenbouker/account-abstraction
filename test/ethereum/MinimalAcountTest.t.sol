@@ -76,7 +76,8 @@ contract MinimalAccountTest is Test {
             abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
 
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
-        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
         bytes32 userOperationHash = IEntryPoint(config.entryPoint).getUserOpHash(packedUserOp);
 
         // act
@@ -99,7 +100,8 @@ contract MinimalAccountTest is Test {
             abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
 
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
-        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
         bytes32 userOperationHash = IEntryPoint(config.entryPoint).getUserOpHash(packedUserOp);
         uint256 missingAccountFunds = 1e18;
 
@@ -120,7 +122,8 @@ contract MinimalAccountTest is Test {
             abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
 
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
-        PackedUserOperation memory packedUserOp = sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generateSignedUserOperation(executeCallData, config, address(minimalAccount));
         //bytes32 userOperationHash = IEntryPoint(config.entryPoint).getUserOpHash(packedUserOp);
 
         // in this case random user will be us fee for execute this operation
