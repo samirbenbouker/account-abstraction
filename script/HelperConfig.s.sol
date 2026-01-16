@@ -14,6 +14,7 @@ contract HelperConfig is Script {
 
     uint256 constant ETH_SEPOLIA_CHAIN_ID = 11155111;
     uint256 constant ZKSYNC_SEPOLIA_CHAIN_ID = 300;
+    uint256 constant ARBITRUM_MAINNET_CHAIN_ID = 42_161;
     uint256 constant LOCAL_CHAIN_ID = 31337;
     address constant BURNER_WALLET = 0xdBe588e8A3082b25E3Ee08b42f93FF44E80Fa057;
     //address constant FOUNDRY_DEFAULT_WALLET = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
@@ -25,6 +26,7 @@ contract HelperConfig is Script {
     constructor() {
         networkConfigs[ETH_SEPOLIA_CHAIN_ID] = getEthSepoliaConfig();
         networkConfigs[ZKSYNC_SEPOLIA_CHAIN_ID] = getZksyncSepoliaConfig();
+        networkConfigs[ARBITRUM_MAINNET_CHAIN_ID] = getArbMainnetConfig();
     }
 
     function getConfig() public returns (NetworkConfig memory) {
@@ -43,6 +45,14 @@ contract HelperConfig is Script {
 
     function getEthSepoliaConfig() public pure returns (NetworkConfig memory) {
         return NetworkConfig({entryPoint: 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789, account: BURNER_WALLET});
+    }
+
+    function getArbMainnetConfig() public pure returns (NetworkConfig memory) {
+        return NetworkConfig({
+            entryPoint: 0x0000000071727De22E5E9d8BAf0edAc6f37da032,
+            //usdc: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831,
+            account: BURNER_WALLET
+        });
     }
 
     function getZksyncSepoliaConfig() public pure returns (NetworkConfig memory) {

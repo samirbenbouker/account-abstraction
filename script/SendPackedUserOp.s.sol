@@ -4,14 +4,38 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {PackedUserOperation} from "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
-import {HelperConfig} from "script/HelperConfig.s.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {MinimalAccount} from "src/ethereum/MinimalAccount.sol";
+import {HelperConfig} from "script/HelperConfig.s.sol";
 
 contract SendPackedUserOp is Script {
     using MessageHashUtils for bytes32;
 
-    function run() public {}
+    address constant ARBITRUM_MAINNET_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
+    address constant ANVIL_DEFAULT_WALLET = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address constant MINIMAL_ACCOUNT_ARBITRUM = 0x03Ad95a54f02A40180D45D76789C448024145aaF;
+
+    function run() public {
+        HelperConfig helperConfig = new HelperConfig();
+        HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
+        address dest = ARBITRUM_MAINNET_USDC;
+        uint256 value = 0;
+        // use your mainnet arbitrum wallet
+        bytes memory functionData = abi.encodeWithSelector(IERC20.approve.selector, ANVIL_DEFAULT_WALLET, 1e18);
+        bytes memory executeCalldata =
+            abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, functionData);
+        // this minimal account address its from cyfrin updraft, deploy using script and put your address here
+        PackedUserOperation memory userOp =
+            generateSignedUserOperation(executeCalldata, config, MINIMAL_ACCOUNT_ARBITRUM);
+        PackedUserOperation[] memory ops = new PackedUserOperation[](1);
+        ops[0] = userOp;
+
+        vm.startBroadcast();
+        IEntryPoint(config.entryPoint).handleOps(ops, payable(config.account));
+        vm.stopBroadcast();
+    }
 
     function generateSignedUserOperation(
         bytes memory callData,
