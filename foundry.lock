@@ -11,6 +11,12 @@
       "rev": "1801b0541f4fda118a10798fd3486bb7051c5dd6"
     }
   },
+  "lib/foundry-era-contracts": {
+    "tag": {
+      "name": "0.0.3",
+      "rev": "3f99de4a37b126c5cb0466067f37be0c932167b2"
+    }
+  },
   "lib/openzeppelin-contracts": {
     "tag": {
       "name": "v5.0.2",
