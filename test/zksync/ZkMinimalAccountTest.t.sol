@@ -69,7 +69,7 @@ contract ZkMinimalAccountTest is Test {
     ///////////////
     function _signTransaction(Transaction memory transaction) internal view returns (Transaction memory) {
         bytes32 unsigendTransactionHash = MemoryTransactionHelper.encodeHash(transaction);
-        bytes32 digest = unsigendTransactionHash.toEthSignedMessageHash();
+        //bytes32 digest = unsigendTransactionHash.toEthSignedMessageHash();
 
         // we dont check if local or external because currently script with zkSync dont works, and can assume will run only localy
         uint8 v;
